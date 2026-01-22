@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Peixe do meu patrão</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root{--bg:#f4fbff;--card:#fff;--accent:#0b76ff;--muted:#666}
+    *{box-sizing:border-box}
+    
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, Arial, sans-serif;
+      background: var(--bg);
+    }
+
+    /* Tela inicial */
+    .splash-screen {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      overflow: hidden;
+    }
+
+    .splash-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+    }
+
+    /* 🐟 Conteúdo da tela inicial */
+    .splash-content {
+      position: relative;
+      text-align: center;
+      color: #fff;
+      z-index: 2;
+    }
+
+    .splash-content h1 {
+      font-size: 32px;
+      margin: 0 0 12px;
+      font-weight: 700;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .splash-content p {
+      font-size: 16px;
+      margin: 0 0 32px;
+      opacity: 0.9;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+
+    .btn-entrar {
+      background: #fff;
+      color: #667eea;
+      border: 0;
+      padding: 14px 40px;
+      border-radius: 50px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-entrar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    }
+
+    .btn-entrar:active {
+      transform: translateY(0);
+    }
+
+    /* Menu */
+    .screen {
+      display: none;
+      padding: 0;
+      background: #0e1a25;
+      color: white;
+      text-align: center;
+      min-height: 100vh;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .screen-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    .screen > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .screen h2 {
+      margin: 0;
+      padding: 15px;
+      background: rgba(14, 26, 37, 0.8);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+    }
+
+    .menu-cards {
+      padding: 20px 15px;
+    }
+
+    .time-display {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 72px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.9);
+      text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .screen .card {
+      margin: 15px auto;
+    }
+
+    .card {
+      background: #162534;
+      padding: 20px;
+      margin: 15px auto;
+      max-width: 320px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      background: #1d3146;
+    }
+
+    button {
+      padding: 12px 20px;
+      margin: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #1e90ff;
+      color: white;
+    }
+
+    button:hover {
+      background: #187bcd;
+    }
+
+    button.ghost{background:#fff;color:var(--accent);border:1px solid rgba(11,118,255,0.12)}
+
+    textarea, input {
+      width: 85%;
+      max-width: 320px;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      margin: 10px 0;
+    }
+
+    /* Estilos dos tanques */
+    .wrapper{display:flex;gap:20px;flex-direction:column;padding:18px}
+    .board-card{background:transparent;border-radius:12px;padding:12px;box-shadow:none}
+    .grid-wrap{display:flex;gap:12px;align-items:flex-start}
+    .rows{display:flex;flex-direction:column;gap:12px;padding:40px 6px 6px 6px}
+    .row-label{height:90px;display:flex;align-items:center;justify-content:center;font-weight:600;color:#fff}
+    .grid{display:grid;grid-template-columns:repeat(5, minmax(110px,1fr));gap:12px;padding:8px}
+    .cell{background:transparent;border-radius:10px;padding:8px;min-height:90px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;border:1px solid rgba(255,255,255,0.1);cursor:pointer}
+    .cell .title{font-weight:700;margin-top:6px;color:#fff}
+    .cell .subtitle{font-size:12px;color:#ccc;margin-top:4px}
+    .cell img{width:100%;height:60px;object-fit:cover;border-radius:6px;background:#000}
+    .cols{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:10px}
+    .col-label{height:26px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
+    
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(10,10,10,0.4)}
+    .modal.open{display:flex}
+    .modal-content{width:95%;max-width:420px;background:#fff;padding:14px;border-radius:12px;color:#333}
+    .modal-content h3{margin:0 0 8px}
+    .form-row{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+    input[type=text]{padding:8px;border-radius:8px;border:1px solid #ddd}
+    input[type=file]{padding:6px}
+    .preview{height:140px;background:#f2f5fb;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .preview img{width:100%;height:100%;object-fit:cover}
+    footer{margin-top:14px;color:var(--muted);font-size:13px}
+    
+    #tanquesScreen {
+      background: #000;
+      color: #fff;
+    }
+
+    @media (max-width:700px){.row-label{height:70px}.cell{min-height:80px}.grid{gap:8px}}
+  </style>
+</head>
+
+<body>
+
+  <!-- 🔐 LOGIN -->
+  <div id="loginScreen" style="display:block;">
+    <div class="splash-screen">
+      <video src="k.mp4" class="splash-video" autoplay loop muted playsinline></video>
+      <div class="splash-content">
+        <img src="c:\Users\Elcas\AppData\Local\Packages\5319275A.WhatsAppDesktop_cv1g1gvanyjgm\LocalState\sessions\4C38C017CD4BFCA3F060DF4E1C7EC265506EAA3F\transfers\2026-04\WhatsApp Image 2026-01-22 at 13.18.15.jpeg" alt="Logo" style="width: 200px; margin-bottom: 20px; border-radius: 12px;">
+        <h1>Peixes do Meu Patrão</h1>
+        <p>Gestão de peixes ornamentais</p>
+        <button class="btn-entrar" id="btnEntrar">Entrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📋 MENU PRINCIPAL -->
+  <div id="menuScreen" class="screen">
+    <video src="b.mp4" class="screen-video" autoplay loop muted playsinline></video>
+    <h2>Menu Principal</h2>
+    <div class="menu-cards">
+      <div class="card" id="btnTanques">🐟 Tanques dos Peixes</div>
+      <div class="card" id="btnCasa">🏠 Casa dos Betas</div>
+      <div class="card" id="btnSemana">📅 Menu da Semana</div>
+      <div class="card" id="btnOrta">🌱 Orta</div>
+    </div>
+  </div>
+
+  <!-- 🐟 TANQUES DOS PEIXES (SISTEMA ANTIGO COMPLETO) -->
+  <div id="tanquesScreen" class="screen">
+    <div class="wrapper">
+      <div class="board-card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <strong>Bloco 1 — 30 tanques</strong>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:12px;align-items:flex-start">
+          <div class="rows" aria-hidden="true"></div>
+          <div style="flex:1">
+            <div class="grid" id="grid"></div>
+            <div class="cols" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="board-card" style="margin-top:20px">
+        <strong>Paulistinha — 11 tanques (0 a 10)</strong>
+        <div style="margin-top:12px">
+          <div class="grid" id="gridPaulistinha" style="grid-template-columns:repeat(6, minmax(110px,1fr))"></div>
+        </div>
+      </div>
+
+      <div class="board-card" style="margin-top:20px">
+        <strong>Guppy — 14 tanques (11-18, Z-U)</strong>
+        <div style="margin-top:12px">
+          <div class="grid" id="gridGuppy" style="grid-template-columns:repeat(7, minmax(110px,1fr))"></div>
+        </div>
+      </div>
+
+      <div class="board-card" style="margin-top:20px">
+        <strong>Bandeira — 13 tanques (A-M)</strong>
+        <div style="margin-top:12px">
+          <div class="grid" id="gridBandeira" style="grid-template-columns:repeat(7, minmax(110px,1fr))"></div>
+        </div>
+      </div>
+
+      <div class="board-card" style="margin-top:20px">
+        <strong>Carpa — 6 tanques (N-S)</strong>
+        <div style="margin-top:12px">
+          <div class="grid" id="gridCarpa" style="grid-template-columns:repeat(6, minmax(110px,1fr))"></div>
+        </div>
+      </div>
+
+      <div class="board-card" style="margin-top:20px">
+        <strong>Filhotes de Beta e Reprodução — 28 tanques</strong>
+        <div style="display:flex;gap:12px;margin-top:12px;align-items:flex-start">
+          <div style="display:flex;flex-direction:column;gap:12px;padding:6px">
+            <div style="height:90px;display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--muted)">A</div>
+            <div style="height:90px;display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--muted)">B</div>
+            <div style="height:90px;display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--muted)">C</div>
+            <div style="height:90px;display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--muted)">D</div>
+            <div style="height:90px;display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--muted)">E</div>
+          </div>
+          <div style="flex:1">
+            <div id="gridBeta"></div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div>Observação: os dados são salvos localmente no navegador (localStorage).</div>
+        <button onclick="voltarMenu()" style="margin-top:12px">← Voltar ao Menu</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- 🏠 CASA DOS BETAS -->
+  <div id="casaScreen" class="screen">
+    <h2>🏠 Casa dos Betas</h2>
+    <p>Esta seção está em desenvolvimento.</p>
+    <button onclick="voltarMenu()">← Voltar ao Menu</button>
+  </div>
+
+  <!-- 📅 MENU DA SEMANA -->
+  <div id="semanaScreen" class="screen">
+    <h2>Menu da Semana</h2>
+    <div class="card" onclick="abrirDia('segunda')">Segunda-feira</div>
+    <div class="card" onclick="abrirDia('terca')">Terça-feira</div>
+    <div class="card" onclick="abrirDia('quarta')">Quarta-feira</div>
+    <div class="card" onclick="abrirDia('quinta')">Quinta-feira</div>
+    <div class="card" onclick="abrirDia('sexta')">Sexta-feira</div>
+    <div class="card" onclick="abrirDia('sabado')">Sábado</div>
+    <button onclick="voltarMenu()">← Voltar</button>
+  </div>
+
+  <!-- 🌱 ORTA -->
+  <div id="ortaScreen" class="screen">
+    <h2>Orta</h2>
+    <div class="card" onclick="abrirDiaOrta('segunda')">Segunda-feira</div>
+    <div class="card" onclick="abrirDiaOrta('terca')">Terça-feira</div>
+    <div class="card" onclick="abrirDiaOrta('quarta')">Quarta-feira</div>
+    <div class="card" onclick="abrirDiaOrta('quinta')">Quinta-feira</div>
+    <div class="card" onclick="abrirDiaOrta('sexta')">Sexta-feira</div>
+    <div class="card" onclick="abrirDiaOrta('sabado')">Sábado</div>
+    <button onclick="voltarMenu()">← Voltar</button>
+  </div>
+
+  <!-- 📝 DIA DA ORTA -->
+  <div id="diaOrtaScreen" class="screen">
+    <h2 id="tituloOrta">Orta - Segunda-feira</h2>
+    <textarea id="textoOrta" placeholder="Digite as tarefas para este dia..." style="width:90%;max-width:600px;height:300px;padding:15px;font-size:16px;border-radius:8px;border:1px solid #ddd;margin:20px auto;display:block;"></textarea>
+    <button onclick="salvarOrta()" style="margin:10px;">💾 Salvar</button>
+    <button onclick="voltarOrta()">← Voltar</button>
+  </div>
+
+  <!-- 📄 DIA DA SEMANA -->
+  <div id="diaScreen" class="screen">
+    <h2 id="diaTitulo"></h2>
+    <textarea id="tarefasDia" rows="5" placeholder="O que fazer neste dia?"></textarea>
+    <button onclick="salvarDia()">Salvar</button>
+    <div id="diaSalvo"></div>
+    <button onclick="voltarSemana()">← Voltar</button>
+  </div>
+
+  <!-- Modal de edição -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h3 id="modalTitle">Editar tanque</h3>
+      <div class="form-row">
+        <label>Nome do Peixe</label>
+        <input type="text" id="fishName" placeholder="Ex.: Betta, Tilápia..." />
+      </div>
+      <div class="form-row">
+        <label>Foto do Peixe (opcional)</label>
+        <input type="file" id="fishImage" accept="image/*" />
+      </div>
+      <div class="form-row">
+        <div class="preview" id="imagePreview">Sem imagem</div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+        <button id="saveBtn">Salvar</button>
+        <button id="cancelBtn" class="ghost">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDcu4PdUG5mgngyxKOXfhiQeHMDex-Y76s",
+      authDomain: "peixe-do-meu-patrao.firebaseapp.com",
+      projectId: "peixe-do-meu-patrao",
+      storageBucket: "peixe-do-meu-patrao.firebasestorage.app",
+      messagingSenderId: "887740051284",
+      appId: "1:887740051284:web:76c65cb0f7bdaeba5222c1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    let diaAtual = "";
+
+    // ============ NAVEGAÇÃO ============
+    function esconderTudo() {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.querySelectorAll(".screen").forEach(s => s.style.display = "none");
+    }
+
+    document.getElementById('btnEntrar').addEventListener('click', () => {
+      esconderTudo();
+      document.getElementById('menuScreen').style.display = 'block';
+    });
+
+    document.getElementById('btnTanques').addEventListener('click', () => {
+      esconderTudo();
+      document.getElementById('tanquesScreen').style.display = 'block';
+    });
+
+    document.getElementById('btnCasa').addEventListener('click', () => {
+      esconderTudo();
+      document.getElementById('casaScreen').style.display = 'block';
+    });
+
+    document.getElementById('btnSemana').addEventListener('click', () => {
+      esconderTudo();
+      document.getElementById('semanaScreen').style.display = 'block';
+    });
+
+    document.getElementById('btnOrta').addEventListener('click', () => {
+      esconderTudo();
+      document.getElementById('ortaScreen').style.display = 'block';
+    });
+
+    let diaOrtaAtual = '';
+    const ortaData = JSON.parse(localStorage.getItem('ortaData') || '{}');
+
+    window.abrirDiaOrta = (dia) => {
+      diaOrtaAtual = dia;
+      esconderTudo();
+      const nomesDias = {
+        segunda: 'Segunda-feira',
+        terca: 'Terça-feira',
+        quarta: 'Quarta-feira',
+        quinta: 'Quinta-feira',
+        sexta: 'Sexta-feira',
+        sabado: 'Sábado'
+      };
+      document.getElementById('tituloOrta').textContent = 'Orta - ' + nomesDias[dia];
+      document.getElementById('textoOrta').value = ortaData[dia] || '';
+      document.getElementById('diaOrtaScreen').style.display = 'block';
+    };
+
+    window.salvarOrta = () => {
+      ortaData[diaOrtaAtual] = document.getElementById('textoOrta').value;
+      localStorage.setItem('ortaData', JSON.stringify(ortaData));
+      alert('Salvo com sucesso!');
+    };
+
+    window.voltarOrta = () => {
+      esconderTudo();
+      document.getElementById('ortaScreen').style.display = 'block';
+    };
+
+    window.voltarMenu = () => {
+      esconderTudo();
+      document.getElementById('menuScreen').style.display = 'block';
+    };
+
+    window.abrirDia = async (dia) => {
+      diaAtual = dia;
+      esconderTudo();
+      document.getElementById('diaScreen').style.display = 'block';
+      document.getElementById('diaTitulo').innerText = dia.toUpperCase();
+
+      const ref = doc(db, "semana", dia);
+      const snap = await getDoc(ref);
+      document.getElementById('tarefasDia').value = snap.exists() ? snap.data().tarefas : "";
+    };
+
+    window.salvarDia = async () => {
+      await setDoc(doc(db, "semana", diaAtual), {
+        tarefas: document.getElementById('tarefasDia').value
+      });
+      document.getElementById('diaSalvo').innerText = "Salvo!";
+      setTimeout(() => document.getElementById('diaSalvo').innerText = "", 2000);
+    };
+
+    window.voltarSemana = () => {
+      esconderTudo();
+      document.getElementById('semanaScreen').style.display = 'block';
+    };
+
+    // ============ SISTEMA DE TANQUES ============
+    const rowsCount = 6;
+    const cols = ['A','B','C','D','E'];
+    const gridEl = document.getElementById('grid');
+    const rowsEl = document.querySelector('.rows');
+    const colsEl = document.querySelector('.cols');
+
+    for(let r=1;r<=rowsCount;r++){
+      const div = document.createElement('div');
+      div.className='row-label';
+      div.textContent = r;
+      rowsEl.appendChild(div);
+    }
+
+    cols.forEach(c=>{
+      const d = document.createElement('div'); 
+      d.className='col-label'; 
+      d.textContent=c; 
+      colsEl.appendChild(d);
+    });
+
+    let data = {};
+    const STORAGE_KEY = 'tanques_6x5_v1';
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if(saved){ try{ data = JSON.parse(saved); }catch(e){ data = {}; } }
+    
+    if(!Object.keys(data).length){
+      data = {
+        '1A': { name: 'Molinésia Gold Black', image: 'fotos-bloco1/molinesia gold black.webp' },
+        '2A': { name: 'Platy Pingo de Ouro', image: 'fotos-bloco1/Platy Pingo de Ouro.webp' },
+        '3A': { name: 'Espada Abacaxi', image: 'fotos-bloco1/espada abacaxi.webp' },
+        '4A': { name: 'Molinésia Prata', image: 'fotos-bloco1/Molinésia Prata.webp' },
+        '5A': { name: 'Platy azul', image: 'fotos-bloco1/Platy azul.webp' },
+        '6A': { name: 'Molinésia Tangerina', image: 'fotos-bloco1/molinesia-tangerina.jpg' },
+        '1B': { name: 'Espada Tricolor', image: 'fotos-bloco1/espada tricolor.jpg' },
+        '2B': { name: 'Filhotes' },
+        '3B': { name: 'Molinésia Balão Prata', image: 'fotos-bloco1/Molinésia Balão Prata.webp' },
+        '4B': { name: 'Platy Rubi', image: 'fotos-bloco1/Platy Rubi.webp' },
+        '5B': { name: 'Filhotes' },
+        '6B': { name: 'Espada Bicolor Albino', image: 'fotos-bloco1/Espada Bicolor Albino.webp' },
+        '1C': { name: 'Molinésia Dálmata', image: 'fotos-bloco1/Molinésia Dálmata.webp' },
+        '2C': { name: 'Platy Sunset', image: 'fotos-bloco1/Platy Sunset.webp' },
+        '3C': { name: 'Molinésia Balão Dálmata', image: 'fotos-bloco1/Molinésia Balão Dálmata.webp' },
+        '4C': { name: 'Espada Sangue' },
+        '5C': { name: 'Platy Véu', image: 'fotos-bloco1/Platy Véu.webp' },
+        '6C': { name: 'Molinésia Milk', image: 'fotos-bloco1/Molinésia Milk.webp' },
+        '1D': { name: 'Espada Lira', image: 'fotos-bloco1/Espada Lira.webp' },
+        '2D': { name: 'Livre' },
+        '3D': { name: 'Platy Abelhinha', image: 'fotos-bloco1/Platy Abelhinha.webp' },
+        '4D': { name: 'Molinesia tigre', image: 'fotos-bloco1/Molinesia tigre.webp' },
+        '5D': { name: 'Livre' },
+        '6D': { name: 'Platy tricolor', image: 'fotos-bloco1/Platy tricolor.webp' },
+        '1E': { name: 'Platy Hawai', image: 'fotos-bloco1/Platy Hawai.webp' },
+        '2E': { name: 'Molinésia Negra Lira', image: 'fotos-bloco1/Molinésia Negra Lira.webp' },
+        '3E': { name: 'Livre' },
+        '4E': { name: 'Livre' },
+        '5E': { name: 'Molinesia negra', image: 'fotos-bloco1/Molinesia negra.webp' },
+        '6E': { name: 'Livre' }
+      };
+    }
+
+    for(let r=1;r<=rowsCount;r++){
+      for(let ci=0;ci<cols.length;ci++){
+        const col = cols[ci];
+        const id = `${r}${col}`;
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.dataset.id = id;
+
+        const img = document.createElement('img');
+        img.alt = `Tanque ${id}`;
+        img.src = data[id] && data[id].image ? data[id].image : '';
+        if(!img.src) img.style.display='none';
+
+        const title = document.createElement('div'); 
+        title.className='title'; 
+        title.textContent = `Tanque ${id}`;
+        const subtitle = document.createElement('div'); 
+        subtitle.className='subtitle'; 
+        subtitle.textContent = data[id] && data[id].name ? data[id].name : '— (vazio)';
+
+        cell.appendChild(img);
+        cell.appendChild(title);
+        cell.appendChild(subtitle);
+        cell.addEventListener('click', ()=> openModal(id, subtitle, img));
+        gridEl.appendChild(cell);
+      }
+    }
+
+    // Paulistinha
+    const gridPaulistinha = document.getElementById('gridPaulistinha');
+    let dataPaulistinha = {};
+    const STORAGE_KEY_PAULISTINHA = 'tanques_paulistinha_v1';
+    const savedPaulistinha = localStorage.getItem(STORAGE_KEY_PAULISTINHA);
+    if(savedPaulistinha){ try{ dataPaulistinha = JSON.parse(savedPaulistinha); }catch(e){ dataPaulistinha = {}; } }
+
+    for(let i=0; i<=10; i++){
+      const id = `P${i}`;
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.id = id;
+
+      const img = document.createElement('img');
+      img.alt = `Tanque ${i}`;
+      img.src = dataPaulistinha[id] && dataPaulistinha[id].image ? dataPaulistinha[id].image : '';
+      if(!img.src) img.style.display='none';
+
+      const title = document.createElement('div'); 
+      title.className='title'; 
+      title.textContent = `Tanque ${i}`;
+      const subtitle = document.createElement('div'); 
+      subtitle.className='subtitle'; 
+      subtitle.textContent = dataPaulistinha[id] && dataPaulistinha[id].name ? dataPaulistinha[id].name : '— (vazio)';
+
+      cell.appendChild(img);
+      cell.appendChild(title);
+      cell.appendChild(subtitle);
+      cell.addEventListener('click', ()=> openModalPaulistinha(id, subtitle, img));
+      gridPaulistinha.appendChild(cell);
+    }
+
+    // Guppy
+    const gridGuppy = document.getElementById('gridGuppy');
+    let dataGuppy = {};
+    const STORAGE_KEY_GUPPY = 'tanques_guppy_v1';
+    const savedGuppy = localStorage.getItem(STORAGE_KEY_GUPPY);
+    if(savedGuppy){ try{ dataGuppy = JSON.parse(savedGuppy); }catch(e){ dataGuppy = {}; } }
+
+    const guppyTanks = [11, 12, 13, 14, 15, 16, 17, 18, 'Z', 'Y', 'X', 'W', 'V', 'U'];
+    guppyTanks.forEach(tankNum => {
+      const id = `G${tankNum}`;
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.id = id;
+
+      const img = document.createElement('img');
+      img.alt = `Tanque ${tankNum}`;
+      img.src = dataGuppy[id] && dataGuppy[id].image ? dataGuppy[id].image : '';
+      if(!img.src) img.style.display='none';
+
+      const title = document.createElement('div'); 
+      title.className='title'; 
+      title.textContent = `Tanque ${tankNum}`;
+      const subtitle = document.createElement('div'); 
+      subtitle.className='subtitle'; 
+      subtitle.textContent = dataGuppy[id] && dataGuppy[id].name ? dataGuppy[id].name : '— (vazio)';
+
+      cell.appendChild(img);
+      cell.appendChild(title);
+      cell.appendChild(subtitle);
+      cell.addEventListener('click', ()=> openModalGuppy(id, subtitle, img));
+      gridGuppy.appendChild(cell);
+    });
+
+    // Bandeira
+    const gridBandeira = document.getElementById('gridBandeira');
+    let dataBandeira = {};
+    const STORAGE_KEY_BANDEIRA = 'tanques_bandeira_v1';
+    const savedBandeira = localStorage.getItem(STORAGE_KEY_BANDEIRA);
+    if(savedBandeira){ try{ dataBandeira = JSON.parse(savedBandeira); }catch(e){ dataBandeira = {}; } }
+
+    const bandeiraLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'];
+    bandeiraLetters.forEach(letter => {
+      const id = `B${letter}`;
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.id = id;
+
+      const img = document.createElement('img');
+      img.alt = `Tanque ${letter}`;
+      img.src = dataBandeira[id] && dataBandeira[id].image ? dataBandeira[id].image : '';
+      if(!img.src) img.style.display='none';
+
+      const title = document.createElement('div'); 
+      title.className='title'; 
+      title.textContent = `Tanque ${letter}`;
+      const subtitle = document.createElement('div'); 
+      subtitle.className='subtitle'; 
+      subtitle.textContent = dataBandeira[id] && dataBandeira[id].name ? dataBandeira[id].name : '— (vazio)';
+
+      cell.appendChild(img);
+      cell.appendChild(title);
+      cell.appendChild(subtitle);
+      cell.addEventListener('click', ()=> openModalBandeira(id, subtitle, img));
+      gridBandeira.appendChild(cell);
+    });
+
+    // Carpa
+    const gridCarpa = document.getElementById('gridCarpa');
+    let dataCarpa = {};
+    const STORAGE_KEY_CARPA = 'tanques_carpa_v1';
+    const savedCarpa = localStorage.getItem(STORAGE_KEY_CARPA);
+    if(savedCarpa){ try{ dataCarpa = JSON.parse(savedCarpa); }catch(e){ dataCarpa = {}; } }
+
+    const carpaLetters = ['N', 'O', 'P', 'Q', 'R', 'S'];
+    carpaLetters.forEach(letter => {
+      const id = `C${letter}`;
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.id = id;
+
+      const img = document.createElement('img');
+      img.alt = `Tanque ${letter}`;
+      img.src = dataCarpa[id] && dataCarpa[id].image ? dataCarpa[id].image : '';
+      if(!img.src) img.style.display='none';
+
+      const title = document.createElement('div'); 
+      title.className='title'; 
+      title.textContent = `Tanque ${letter}`;
+      const subtitle = document.createElement('div'); 
+      subtitle.className='subtitle'; 
+      subtitle.textContent = dataCarpa[id] && dataCarpa[id].name ? dataCarpa[id].name : '— (vazio)';
+
+      cell.appendChild(img);
+      cell.appendChild(title);
+      cell.appendChild(subtitle);
+      cell.addEventListener('click', ()=> openModalCarpa(id, subtitle, img));
+      gridCarpa.appendChild(cell);
+    });
+
+    // Beta
+    const gridBeta = document.getElementById('gridBeta');
+    let dataBeta = {};
+    const STORAGE_KEY_BETA = 'tanques_beta_v1';
+    const savedBeta = localStorage.getItem(STORAGE_KEY_BETA);
+    if(savedBeta){ try{ dataBeta = JSON.parse(savedBeta); }catch(e){ dataBeta = {}; } }
+
+    const betaRows = {
+      'A': ['A1', 'A2', 'A3', 'A4', 'A5', 'A6'],
+      'B': ['B1', 'B2', 'B3', 'B4', 'B5'],
+      'C': ['C1', 'C2', 'C3', 'C4', 'C5'],
+      'D': ['D1', 'D2', 'D3', 'D4', 'D5'],
+      'E': ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E8']
+    };
+
+    Object.keys(betaRows).forEach(rowLetter => {
+      const rowDiv = document.createElement('div');
+      rowDiv.style.display = 'grid';
+      rowDiv.style.gridTemplateColumns = 'repeat(8, minmax(110px,1fr))';
+      rowDiv.style.gap = '12px';
+      rowDiv.style.marginBottom = '12px';
+
+      betaRows[rowLetter].forEach(tankNum => {
+        const id = `BT${tankNum}`;
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.dataset.id = id;
+
+        const img = document.createElement('img');
+        img.alt = `Tanque ${tankNum}`;
+        img.src = dataBeta[id] && dataBeta[id].image ? dataBeta[id].image : '';
+        if(!img.src) img.style.display='none';
+
+        const title = document.createElement('div'); 
+        title.className='title'; 
+        title.textContent = `Tanque ${tankNum}`;
+        const subtitle = document.createElement('div'); 
+        subtitle.className='subtitle'; 
+        subtitle.textContent = dataBeta[id] && dataBeta[id].name ? dataBeta[id].name : '— (vazio)';
+
+        cell.appendChild(img);
+        cell.appendChild(title);
+        cell.appendChild(subtitle);
+        cell.addEventListener('click', ()=> openModalBeta(id, subtitle, img));
+        rowDiv.appendChild(cell);
+      });
+
+      gridBeta.appendChild(rowDiv);
+    });
+
+    // Modal
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modalTitle');
+    const fishName = document.getElementById('fishName');
+    const fishImage = document.getElementById('fishImage');
+    const imagePreview = document.getElementById('imagePreview');
+    const saveBtn = document.getElementById('saveBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+
+    let currentId = null;
+    let currentPreviewDataUrl = null;
+    let currentDataStore = null;
+
+    function openModal(id){
+      currentId = id;
+      currentDataStore = data;
+      modalTitle.textContent = `Editar ${id}`;
+      fishName.value = (data[id] && data[id].name) ? data[id].name : '';
+      currentPreviewDataUrl = (data[id] && data[id].image) ? data[id].image : null;
+      renderPreview();
+      fishImage.value = null;
+      modal.classList.add('open');
+      setTimeout(()=>fishName.focus(),150);
+    }
+
+    function openModalPaulistinha(id){
+      currentId = id;
+      currentDataStore = dataPaulistinha;
+      modalTitle.textContent = `Editar Tanque ${id.replace('P','')}`;
+      fishName.value = (dataPaulistinha[id] && dataPaulistinha[id].name) ? dataPaulistinha[id].name : '';
+      currentPreviewDataUrl = (dataPaulistinha[id] && dataPaulistinha[id].image) ? dataPaulistinha[id].image : null;
+      renderPreview();
+      fishImage.value = null;
+      modal.classList.add('open');
+      setTimeout(()=>fishName.focus(),150);
+    }
+
+    function openModalGuppy(id){
+      currentId = id;
+      currentDataStore = dataGuppy;
+      modalTitle.textContent = `Editar Tanque ${id.replace('G','')}`;
+      fishName.value = (dataGuppy[id] && dataGuppy[id].name) ? dataGuppy[id].name : '';
+      currentPreviewDataUrl = (dataGuppy[id] && dataGuppy[id].image) ? dataGuppy[id].image : null;
+      renderPreview();
+      fishImage.value = null;
+      modal.classList.add('open');
+      setTimeout(()=>fishName.focus(),150);
+    }
+
+    function openModalBandeira(id){
+      currentId = id;
+      currentDataStore = dataBandeira;
+      modalTitle.textContent = `Editar Tanque ${id.replace('B','')}`;
+      fishName.value = (dataBandeira[id] && dataBandeira[id].name) ? dataBandeira[id].name : '';
+      currentPreviewDataUrl = (dataBandeira[id] && dataBandeira[id].image) ? dataBandeira[id].image : null;
+      renderPreview();
+      fishImage.value = null;
+      modal.classList.add('open');
+      setTimeout(()=>fishName.focus(),150);
+    }
+
+    function openModalCarpa(id){
+      currentId = id;
+      currentDataStore = dataCarpa;
+      modalTitle.textContent = `Editar Tanque ${id.replace('C','')}`;
+      fishName.value = (dataCarpa[id] && dataCarpa[id].name) ? dataCarpa[id].name : '';
+      currentPreviewDataUrl = (dataCarpa[id] && dataCarpa[id].image) ? dataCarpa[id].image : null;
+      renderPreview();
+      fishImage.value = null;
+      modal.classList.add('open');
+      setTimeout(()=>fishName.focus(),150);
+    }
+
+    function openModalBeta(id){
+      currentId = id;
+      currentDataStore = dataBeta;
+      modalTitle.textContent = `Editar Tanque ${id.replace('BT','')}`;
+      fishName.value = (dataBeta[id] && dataBeta[id].name) ? dataBeta[id].name : '';
+      currentPreviewDataUrl = (dataBeta[id] && dataBeta[id].image) ? dataBeta[id].image : null;
+      renderPreview();
+      fishImage.value = null;
+      modal.classList.add('open');
+      setTimeout(()=>fishName.focus(),150);
+    }
+
+    saveBtn.onclick = ()=>{
+      const name = fishName.value.trim();
+      if(currentPreviewDataUrl){
+        currentDataStore[currentId] = { name: name, image: currentPreviewDataUrl };
+      } else if(name){
+        currentDataStore[currentId] = { name: name };
+      } else {
+        delete currentDataStore[currentId];
+      }
+      updateCell(currentId);
+      saveData();
+      closeModal();
+    };
+
+    cancelBtn.onclick = ()=> closeModal();
+    modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
+
+    function closeModal(){ 
+      modal.classList.remove('open'); 
+      currentId = null; 
+      currentPreviewDataUrl = null; 
+      fishImage.value = null; 
+    }
+
+    fishImage.addEventListener('change', (e)=>{
+      const f = e.target.files && e.target.files[0];
+      if(!f) return;
+      const reader = new FileReader();
+      reader.onload = function(ev){ 
+        currentPreviewDataUrl = ev.target.result; 
+        renderPreview(); 
+      };
+      reader.readAsDataURL(f);
+    });
+
+    function renderPreview(){
+      imagePreview.innerHTML = '';
+      if(currentPreviewDataUrl){
+        const i = document.createElement('img'); 
+        i.src = currentPreviewDataUrl; 
+        imagePreview.appendChild(i);
+      } else {
+        imagePreview.textContent = 'Sem imagem';
+      }
+    }
+
+    function updateCell(id){
+      const cell = document.querySelector(`.cell[data-id='${id}']`);
+      if(!cell) return;
+      const subtitle = cell.querySelector('.subtitle');
+      const img = cell.querySelector('img');
+      
+      const cellData = currentDataStore[id];
+      if(cellData && cellData.name) subtitle.textContent = cellData.name; 
+      else subtitle.textContent = '— (vazio)';
+      
+      if(cellData && cellData.image){ 
+        img.src = cellData.image; 
+        img.style.display='block'; 
+      } else { 
+        img.src=''; 
+        img.style.display='none'; 
+      }
+    }
+
+    function saveData(){
+      try{ 
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); 
+        localStorage.setItem(STORAGE_KEY_PAULISTINHA, JSON.stringify(dataPaulistinha)); 
+        localStorage.setItem(STORAGE_KEY_GUPPY, JSON.stringify(dataGuppy)); 
+        localStorage.setItem(STORAGE_KEY_BANDEIRA, JSON.stringify(dataBandeira)); 
+        localStorage.setItem(STORAGE_KEY_CARPA, JSON.stringify(dataCarpa)); 
+        localStorage.setItem(STORAGE_KEY_BETA, JSON.stringify(dataBeta)); 
+      }catch(e){ 
+        alert('Erro ao salvar. Imagem muito grande.'); 
+      }
+    }
+
+    Object.keys(data).forEach(k=>updateCell(k));
+    Object.keys(dataPaulistinha).forEach(k=>updateCell(k));
+    Object.keys(dataGuppy).forEach(k=>updateCell(k));
+    Object.keys(dataBandeira).forEach(k=>updateCell(k));
+    Object.keys(dataCarpa).forEach(k=>updateCell(k));
+    Object.keys(dataBeta).forEach(k=>updateCell(k));
+  </script>
+
+</body>
+</html>
