@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="fish-from-my-boss"> 
+    <meta name="author" content="ermano">
+    <title>fish-from-my-boss</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <!-- 🐟 MENU DE TANQUES -->
+  <!-- 🐠 PAULISTINHA -->
+  <div id="paulistinhaScreen" class="screen">
+    <h2>🐠 Tanques Paulistinha</h2>
+    <div style="padding:20px">
+      <div id="gridPaulistinha" class="grid" style="grid-template-columns:repeat(6, minmax(110px,1fr))"></div>
+    </div>
+    <button onclick="voltarMenuTanques()">← Voltar</button>
+  </div>
+
+  <!-- 🐟 GUPPY -->
+  <div id="guppyScreen" class="screen">
+    <h2>🐟 Tanques Guppy</h2>
+    <div style="padding:20px">
+      <div id="gridGuppy" class="grid" style="grid-template-columns:repeat(7, minmax(110px,1fr))"></div>
+    </div>
+    <button onclick="voltarMenuTanques()">← Voltar</button>
+  </div>
+
+  <!-- 🎏 BANDEIRA -->
+  <div id="bandeiraScreen" class="screen">
+    <h2>🎏 Tanques Bandeira</h2>
+    <div style="padding:20px">
+      <div id="gridBandeira" class="grid" style="grid-template-columns:repeat(7, minmax(110px,1fr))"></div>
+    </div>
+    <button onclick="voltarMenuTanques()">← Voltar</button>
+  </div>
+
+  <!-- 🐡 CARPA -->
+  <div id="carpaScreen" class="screen">
+    <h2>🐡 Tanques Carpa</h2>
+    <div style="padding:20px">
+      <div id="gridCarpa" class="grid" style="grid-template-columns:repeat(6, minmax(110px,1fr))"></div>
+    </div>
+    <button onclick="voltarMenuTanques()">← Voltar</button>
+  </div>
+
+  <!-- 🐣 FILHOTES DE BETA -->
+  <div id="betaScreen" class="screen">
+    <h2>🐣 Filhotes de Beta</h2>
+    <div style="padding:20px">
+      <div id="gridBeta"></div>
+    </div>
+    <button onclick="voltarMenuTanques()">← Voltar</button>
+  </div>
+
+  <!-- 🔐 LOGIN -->
+  <div id="loginScreen" style="display:block;">
+    <div class="splash-screen">
+      <video src="k.mp4" class="splash-video" autoplay loop muted playsinline></video>
+      <div class="splash-content">
+        <h1>Peixes do Meu Patrão</h1>
+        <p>Gestão de peixes ornamentais</p>
+        <button class="btn-entrar" id="btnEntrar">Entrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📋 MENU PRINCIPAL -->
+  <div id="menuScreen" class="screen">
+    <video src="b.mp4" class="screen-video" autoplay loop muted playsinline></video>
+    <h2>Menu Principal</h2>
+    <div class="menu-cards">
+      <div class="card" id="btnTanques">🐟 Tanques dos Peixes</div>
+      <div class="card" id="btnCasa">🏠 Casa dos Betas</div>
+      <div class="card" id="btnSemana">📅 Menu da Semana</div>
+    </div>
+  </div>
+
+  <!-- 🐟 TANQUES DOS PEIXES (SISTEMA ANTIGO COMPLETO) -->
+  <div id="tanquesScreen" class="screen">
+    <div class="wrapper">
+      <div class="board-card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <strong>Peixes</strong>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:12px;align-items:flex-start">
+          <div class="rows" aria-hidden="true"></div>
+          <div style="flex:1">
+            <div class="grid" id="grid"></div>
+            <div class="cols" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+
+
+      <footer>
+        <div>Observação: os dados são salvos localmente no navegador (localStorage).</div>
+        <button onclick="voltarMenu()" style="margin-top:12px">← Voltar ao Menu</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- 🐟 MENU DE TANQUES -->
+  <!-- 🐠 PAULISTINHA -->
+  <div id="paulistinhaScreen" class="screen">
+    <h2>🐠 Tanques Paulistinha</h2>
+    <div style="padding:20px">
+      <div id="gridPaulistinha" class="grid" style="grid-template-columns:repeat(6, minmax(110px,1fr))"></div>
+    </div>
+    <button onclick="voltarMenuTanques()">← Voltar</button>
+  </div>
+  <div id="menuTanquesScreen" class="screen">
+    <h2>🐟 Tanques dos Peixes</h2>
+    <div class="menu-cards">
+      <div class="card" onclick="abrirTanque('bloco')">🐟 Peixes</div>
+      <div class="card" onclick="abrirTanque('paulistinha')">🐠 Paulistinha</div>
+      <div class="card" onclick="abrirTanque('guppy')">🐟 Guppy</div>
+      <div class="card" onclick="abrirTanque('bandeira')">🎏 Bandeira</div>
+      <div class="card" onclick="abrirTanque('carpa')">🐡 Carpa</div>
+      <div class="card" onclick="abrirTanque('beta')">🐣 Filhotes de Beta</div>
+    </div>
+    <button onclick="voltarMenu()">← Voltar ao Menu</button>
+  </div>
+  <!-- 🏠 CASA DOS BETAS -->
+<div id="casaScreen" class="screen">
+  <h2>🏠 Casa dos Betas — 100 Aquários</h2>
+
+  <div style="padding:20px">
+    <div id="gridCasaBetas" class="grid" style="grid-template-columns:repeat(10, minmax(110px,1fr))"></div>
+  </div>
+
+  <button onclick="voltarMenu()">← Voltar ao Menu</button>
+</div>
+
+  <!-- 📅 MENU DA SEMANA -->
+  <div id="semanaScreen" class="screen">
+    <h2>Menu da Semana</h2>
+    <div class="card" onclick="abrirDia('segunda')">Segunda-feira</div>
+    <div class="card" onclick="abrirDia('terca')">Terça-feira</div>
+    <div class="card" onclick="abrirDia('quarta')">Quarta-feira</div>
+    <div class="card" onclick="abrirDia('quinta')">Quinta-feira</div>
+    <div class="card" onclick="abrirDia('sexta')">Sexta-feira</div>
+    <div class="card" onclick="abrirDia('sabado')">Sábado</div>
+    <button onclick="voltarMenu()">← Voltar</button>
+  </div>
+
+  <!-- 📄 DIA DA SEMANA -->
+  <div id="diaScreen" class="screen">
+    <h2 id="diaTitulo"></h2>
+    <textarea id="tarefasDia" rows="5" placeholder="O que fazer neste dia?"></textarea>
+    <button onclick="salvarDia()">Salvar</button>
+    <div id="diaSalvo"></div>
+    <button onclick="voltarSemana()">← Voltar</button>
+  </div>
+
+  <!-- Modal de edição -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h3 id="modalTitle">Editar tanque</h3>
+      <div class="form-row">
+        <label>Nome do Peixe</label>
+        <input type="text" id="fishName" placeholder="Ex.: Betta, Tilápia..." />
+      </div>
+      <div class="form-row">
+        <label>Foto do Peixe (opcional)</label>
+        <input type="file" id="fishImage" accept="image/*" />
+      </div>
+      <div class="form-row">
+        <div class="preview" id="imagePreview">Sem imagem</div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+        <button id="saveBtn">Salvar</button>
+        <button id="cancelBtn" class="ghost">Cancelar</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="script.js"></script>
+</body>
+</html>

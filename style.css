@@ -1,0 +1,205 @@
+:root{--bg:#f4fbff;--card:#fff;--accent:#0b76ff;--muted:#666}
+    *{box-sizing:border-box}
+    
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, Arial, sans-serif;
+      background: var(--bg);
+    }
+
+    /* Tela inicial */
+    .splash-screen {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      overflow: hidden;
+    }
+
+    .splash-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+    }
+
+    /* 🐟 Conteúdo da tela inicial */
+    .splash-content {
+      position: relative;
+      text-align: center;
+      color: #fff;
+      z-index: 2;
+    }
+
+    .splash-content h1 {
+      font-size: 32px;
+      margin: 0 0 12px;
+      font-weight: 700;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .splash-content p {
+      font-size: 16px;
+      margin: 0 0 32px;
+      opacity: 0.9;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+
+    .btn-entrar {
+      background: #fff;
+      color: #667eea;
+      border: 0;
+      padding: 14px 40px;
+      border-radius: 50px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-entrar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    }
+
+    .btn-entrar:active {
+      transform: translateY(0);
+    }
+
+    /* Menu */
+    .screen {
+      display: none;
+      padding: 0;
+      background: #0e1a25;
+      color: white;
+      text-align: center;
+      min-height: 100vh;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .screen-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    .screen > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .screen h2 {
+      margin: 0;
+      padding: 15px;
+      background: rgba(14, 26, 37, 0.8);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+    }
+
+    .menu-cards {
+      padding: 20px 15px;
+    }
+
+    .time-display {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 72px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.9);
+      text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .screen .card {
+      margin: 15px auto;
+    }
+
+    .card {
+      background: #162534;
+      padding: 20px;
+      margin: 15px auto;
+      max-width: 320px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      background: #1d3146;
+    }
+
+    button {
+      padding: 12px 20px;
+      margin: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #1e90ff;
+      color: white;
+    }
+
+    button:hover {
+      background: #187bcd;
+    }
+
+    button.ghost{background:#fff;color:var(--accent);border:1px solid rgba(11,118,255,0.12)}
+
+    textarea, input {
+      width: 85%;
+      max-width: 320px;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      margin: 10px 0;
+    }
+
+    /* Estilos dos tanques */
+    .wrapper{display:flex;gap:20px;flex-direction:column;padding:18px}
+    .board-card{background:transparent;border-radius:12px;padding:12px;box-shadow:none}
+    .grid-wrap{display:flex;gap:12px;align-items:flex-start}
+    .rows{display:flex;flex-direction:column;gap:12px;padding:40px 6px 6px 6px}
+    .row-label{height:90px;display:flex;align-items:center;justify-content:center;font-weight:600;color:#fff}
+    .grid{display:grid;grid-template-columns:repeat(5, minmax(110px,1fr));gap:12px;padding:8px}
+    .cell{background:transparent;border-radius:10px;padding:8px;min-height:90px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;border:1px solid rgba(255,255,255,0.1);cursor:pointer}
+    .cell .title{font-weight:700;margin-top:6px;color:#fff}
+    .cell .subtitle{font-size:12px;color:#ccc;margin-top:4px}
+    .cell img{width:100%;height:60px;object-fit:cover;border-radius:6px;background:#000}
+    .cols{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:10px}
+    .col-label{height:26px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
+    
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(10,10,10,0.4)}
+    .modal.open{display:flex}
+    .modal-content{width:95%;max-width:420px;background:#fff;padding:14px;border-radius:12px;color:#333}
+    .modal-content h3{margin:0 0 8px}
+    .form-row{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+    input[type=text]{padding:8px;border-radius:8px;border:1px solid #ddd}
+    input[type=file]{padding:6px}
+    .preview{height:140px;background:#f2f5fb;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .preview img{width:100%;height:100%;object-fit:cover}
+    footer{margin-top:14px;color:var(--muted);font-size:13px}
+    
+    #tanquesScreen {
+      background: #000;
+      color: #fff;
+    }
+
+    @media (max-width:700px){.row-label{height:70px}.cell{min-height:80px}.grid{gap:8px}}
